@@ -1,35 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// หน้านี้เป็นหน้าหลักของแอป ที่ไว้ routing
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import Home from './components/Home'; 
+import About from './components/About'; 
+import Detail from './components/detail';
+import Favorite from './components/Favorite'; 
+import Developer from './components/Developer'; 
+import NotFound from './components/NotFound';
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  // เเก้ tailwind ของ navbar ได้เลย
+  // router ด้านล่างเป็นการกำหนดเส้นทางของหน้าเว็บ
+  // ลบ link ของ developer ออกได้เลยถ้าจะทำเป็น steam หรือฝั่งไว้ในหน้า detail 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Router>
+      <nav className="flex gap-4 p-4 bg-gray-100">
+        <Link to="/">Home</Link>
+        <Link to="/about">About</Link>
+        <Link to="/detail">Detail</Link>
+        <Link to="/favorite">Favorite</Link>
+        <Link to="/developer">Developer</Link>
+      </nav>
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/detail" element={<Detail />} />
+        <Route path="/favorite" element={<Favorite />} />
+        <Route path="/developer" element={<Developer />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
