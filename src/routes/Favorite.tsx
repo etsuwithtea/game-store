@@ -37,7 +37,7 @@ export default function Favorites() {
         );
 
         const responses = await Promise.all(promises); 
-        const games = responses.map(r => (r as any).data as Game);
+        const games = responses.map(res => res.data);
 
         setFavItems(games);
         setStatus("idle");
