@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import gameReducer from './gameSlice';
+import favoritesReducer from './favoritesSlice';
 
 //ดึง gameReducer มาจาก gameSlice
 export const store = configureStore({
     reducer: {
         games: gameReducer,
+        favorites: favoritesReducer,
     },
 });
 
