@@ -36,11 +36,8 @@ export default function Favorites() {
           })
         );
 
-        const results = await Promise.allSettled(promises);
-
-        const games: Game[] = results
-          .filter((r): r is PromiseFulfilledResult<any> => r.status === "fulfilled")
-          .map((r) => r.value.data as Game);
+        const responses = await Promise.all(promises); 
+        const games = responses.map(r => (r as any).data as Game);
 
         setFavItems(games);
         setStatus("idle");
