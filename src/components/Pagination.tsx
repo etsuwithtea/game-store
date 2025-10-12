@@ -19,6 +19,23 @@ export default function Pagination({ total, limit, offset, onChange }: Props) {
   // Math.max(1, ...) เพื่อให้แน่ใจว่ามีอย่างน้อย 1 หน้าเสมอ
   const pages = Math.max(1, Math.ceil(total / limit));
 
+  // ฟังก์ชันสำหรับไปยังหน้าที่ระบุ
+  const goToPage = (pageNumber: number) => {
+    const targetPage = Math.max(1, Math.min(pageNumber, pages));
+    const newOffset = (targetPage - 1) * limit;
+    onChange(newOffset);
+  };
+
+  // จัดการการกด Enter ในช่อง input
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const inputPage = parseInt((e.target as HTMLInputElement).value);
+      if (!isNaN(inputPage)) {
+        goToPage(inputPage);
+      }
+    }
+  };
+
   return (
     <div className="flex justify-center items-center gap-3 mt-8 ">
       {/* ปุ่มย้อนกลับ (Previous) */}
@@ -36,9 +53,29 @@ export default function Pagination({ total, limit, offset, onChange }: Props) {
         Prev
       </button>
 
-      {/* ปุ่มสำหรับแสดงข้อมูลหน้าปัจจุบัน */}
-      <div className="px-6 py-3 bg-neutral-100 text-black font-bold border-2 border-gray-700 rounded-lg">
-        Page {page} / {pages}
+      {/* ปุ่มสำหรับแสดงข้อมูลหน้าปัจจุบัน และช่องกรอกหมายเลขหน้า */}
+      <div className="flex items-center gap-2 px-4 py-3 bg-neutral-100 border-2 border-gray-700 rounded-lg">
+        <span className="text-black font-bold">
+          Page
+        </span>
+        <input
+          type="number"
+          min="1"
+          max={pages}
+          defaultValue={page}
+          key={page} // force re-render เมื่อหน้าเปลี่ยน
+          onKeyPress={handleKeyPress}
+          onBlur={(e) => {
+            const inputPage = parseInt(e.target.value);
+            if (!isNaN(inputPage) && inputPage !== page) {
+              goToPage(inputPage);
+            }
+          }}
+          className="w-16 px-2 py-1 text-center bg-white text-black font-bold border-2 border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-yellow-300"
+        />
+        <span className="text-black font-bold">
+          / {pages}
+        </span>
       </div>
 
       {/* ปุ่มถัดไป (Next) */}
