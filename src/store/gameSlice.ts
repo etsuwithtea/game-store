@@ -27,7 +27,7 @@ const initialState: GamesState = {
   limit: 16,
   offset: 0,
   query: '',
-  ordering: '-rating', // เรียงตาม rating สูงสุดก่อน
+  ordering: '-added', // เรียงตามวันที่เพิ่มล่าสุด
   genre: '',
 };
 
