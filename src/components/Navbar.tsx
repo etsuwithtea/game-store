@@ -44,13 +44,7 @@ export default function Navbar() {
                             <Heart className="w-5 h-5" />
                             Favorite
                         </NavLink>
-                        <NavLink 
-                            to="/developer" 
-                            className="btn border-2 border-gray-700 bg-yellow-300 text-black font-bold normal-case hover:border-gray-700 hover:text-amber-50 hover:bg-black"
-                        >
-                            <Code className="w-5 h-5" />
-                            Developer
-                        </NavLink>
+
                     </div>
 
                     {/* Mobile Menu Button กินแฮมเบอร์เกอร์ */}
@@ -91,14 +85,6 @@ export default function Navbar() {
                             >
                                 <Heart className="w-5 h-5" />
                                 Favorite
-                            </NavLink>
-                            <NavLink 
-                                to="/developer" 
-                                onClick={() => setIsMenuOpen(false)}
-                                className="btn border-2 border-gray-700 bg-yellow-300 text-black font-bold normal-case hover:border-gray-700 hover:text-amber-50 hover:bg-black w-full justify-start"
-                            >
-                                <Code className="w-5 h-5" />
-                                Developer
                             </NavLink>
                         </div>
                     </div>

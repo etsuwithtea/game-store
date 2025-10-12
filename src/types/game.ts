@@ -26,6 +26,7 @@ export type Game = {
   esrb_rating?: ESRBRating;
   short_screenshots: Screenshot[];
   description_raw?: string; // จะได้จาก detail endpoint
+  developers?: Developer[]; // เพิ่ม developers
 };
 
 export type Rating = {
@@ -92,4 +93,12 @@ export type ESRBRating = {
 export type Screenshot = {
   id: number;
   image: string;
+};
+
+export type Developer = {
+  id: number;
+  name: string;
+  slug: string;
+  games_count: number;
+  image_background: string;
 };
