@@ -19,10 +19,6 @@ export default function GameGrid({ items }: { items: Game[] }) {
   }
 
   return (
-    // ใช้ Tailwind CSS ในการสร้าง Grid Layout ที่ปรับขนาดตามหน้าจอ (responsive)
-    // - grid-cols-2: 2 คอลัมน์ในจอเล็ก
-    // - md:grid-cols-3: 3 คอลัมน์ในจอขนาดกลาง
-    // - lg:grid-cols-4: 4 คอลัมน์ในจอขนาดใหญ่
     <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {items.map(game => <GameCard key={game.id} game={game} />)}
     </div>

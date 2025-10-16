@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Home, Info, Heart, Code, Gamepad2, Menu } from "lucide-react";
+import { Home, Info, Heart, Gamepad2, Menu } from "lucide-react";
 import { useState } from "react";
 
 export default function Navbar() {

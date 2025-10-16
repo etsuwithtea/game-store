@@ -1,9 +1,9 @@
-// Import hook และ component ที่จำเป็น
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store/store";
 import GameGrid from "../components/GameGrid";
+import ClearFavoritesButton from "../components/ClearFavoritesButton";
 import type { Game } from "../types/game";
 
 // RAWG API key from Vite env 
@@ -15,7 +15,7 @@ export default function Favorites() {
   const { ids } = useSelector((state: RootState) => state.favorites);
 
   // 2. สร้าง state ของตัวเองเพื่อเก็บข้อมูลหนังและสถานะการโหลด
-  const [favItems, setFavItems] = useState<Game []>([]);
+  const [favItems, setFavItems] = useState<Game[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -53,7 +53,11 @@ export default function Favorites() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">My Favorites</h1>
+      {/* Header พร้อมปุ่ม Clear */}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">My Favorites</h1>
+        <ClearFavoritesButton />
+      </div>
 
       {status === "loading" && (
         <div className="text-center">
@@ -68,7 +72,7 @@ export default function Favorites() {
 
       {status === "idle" && !favItems.length && (
         <div className="text-center opacity-70 p-10">
-          ยังไม่มีรายการโปรด — ไปที่หน้า Home แล้วกด “Favorite” ที่การ์ดหนัง
+          ยังไม่มีรายการโปรด — ไปที่หน้า Home แล้วกด "Favorite" ที่การ์ดหนัง
         </div>
       )}
     </div>
