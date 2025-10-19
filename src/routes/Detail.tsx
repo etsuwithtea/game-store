@@ -1,62 +1,74 @@
+// เอา hooks กับ components ที่จะใช้มาจาก React และ React Router
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import type { Game } from "../types/game";
+// เอา types มาใช้กำหนดโครงสร้างข้อมูล
+import type { Game, MovieData, ScreenshotData } from "../types/game";
+// เอา Redux มาใช้จัดการ state
 import { useDispatch, useSelector } from "react-redux";
 import { toggleFavorite } from "../store/favoritesSlice";
 import type { RootState, AppDispatch } from "../store/store";
+// เอา icons มาจาก lucide-react
 import { ArrowLeft, Heart, Star, Gamepad2, Calendar, Users, X } from "lucide-react";
 
+// ดึง API key มาจาก environment variables
 const RAWG_API_KEY = import.meta.env.VITE_RAWG_API_KEY;
+// ตั้ง base URL ไว้เรียก API
 const BASE_URL = 'https://api.rawg.io/api';
 
-interface MovieData {
-  id: number;
-  name: string;
-  preview: string;
-  data: {
-    480?: string;
-    max?: string;
-  };
-}
-
-interface ScreenshotData {
-  id: number;
-  image: string;
-  width: number;
-  height: number;
-}
-
-function Detail() {
+/**
+ * Component หน้ารายละเอียดเกม
+ * จะแสดงข้อมูลเกมแบบละเอียด มีรูป วิดีโอ กับข้อมูลต่างๆ
+ */
+export default function Detail() {
+  // ดึง id ของเกมมาจาก URL
   const { id } = useParams();
+
+  // เก็บข้อมูลเกม
   const [game, setGame] = useState<Game | null>(null);
+  // เก็บวิดีโอตัวอย่าง
   const [trailers, setTrailers] = useState<MovieData[]>([]);
+  // เก็บภาพหน้าจอ
   const [screenshots, setScreenshots] = useState<ScreenshotData[]>([]);
+  // เก็บว่าตอนนี้เลือกดูอะไรอยู่ (วิดีโอหรือรูป)
   const [selectedMedia, setSelectedMedia] = useState<{ type: 'video' | 'image', url: string, poster?: string } | null>(null);
+  // เช็คว่า modal เปิดอยู่มั้ย
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // เช็คสถานะว่ากำลังโหลดอยู่หรือเปล่า
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   
+  // เตรียม Redux ไว้ใช้งาน แล้วก็ดึงข้อมูลเกมโปรดมา
   const dispatch = useDispatch<AppDispatch>();
   const { ids: favIds } = useSelector((state: RootState) => state.favorites);
-  
+  // เช็คว่าเกมนี้อยู่ในรายการโปรดมั้ย
   const isFavorited = favIds.includes(String(id));
 
+  /**
+   * ดึงข้อมูลเกมจาก API
+   * จะทำงานทุกครั้งที่ id เปลี่ยน
+   */
   useEffect(() => {
     const fetchGameDetail = async () => {
+      // ถ้าไม่มี id ก็ไม่ต้องทำอะไร
       if (!id) return;
+      
+      // บอกว่ากำลังโหลด
       setStatus("loading");
+      
       try {
-        // Fetch game details
+        // 1. ไปดึงข้อมูลเกมมา
         const gameUrl = `${BASE_URL}/games/${id}?key=${RAWG_API_KEY}`;
         const gameResponse = await fetch(gameUrl);
         
+        // เช็คว่า API ตอบกลับมาปกติมั้ย
         if (!gameResponse.ok) {
           throw new Error(`HTTP error! status: ${gameResponse.status}`);
         }
         
+        // แปลงข้อมูลเป็น JSON แล้วเก็บไว้
         const gameData: Game = await gameResponse.json();
         setGame(gameData);
 
-        // Fetch trailers/movies
+        // 2. ไปดึงวิดีโอตัวอย่างมา
         const moviesUrl = `${BASE_URL}/games/${id}/movies?key=${RAWG_API_KEY}`;
         const moviesResponse = await fetch(moviesUrl);
         
@@ -67,7 +79,7 @@ function Detail() {
           trailersList = moviesData.results || [];
           setTrailers(trailersList);
           
-          // ตั้งค่า video แรกเป็น selected media
+          // ถ้ามีวิดีโอ ก็ตั้งให้วิดีโอแรกเป็นตัวที่แสดง
           if (trailersList.length > 0) {
             setSelectedMedia({
               type: 'video',
@@ -79,7 +91,7 @@ function Detail() {
           console.log('Failed to fetch movies:', moviesResponse.status);
         }
 
-        // Fetch screenshots
+        // 3. ไปดึงภาพหน้าจอมา
         const screenshotsUrl = `${BASE_URL}/games/${id}/screenshots?key=${RAWG_API_KEY}`;
         const screenshotsResponse = await fetch(screenshotsUrl);
         
@@ -89,7 +101,7 @@ function Detail() {
           const screenshotsList = screenshotsData.results || [];
           setScreenshots(screenshotsList);
           
-          // ถ้าไม่มี trailer ให้ตั้งค่ารูปแรกเป็น selected media
+          // ถ้าไม่มีวิดีโอแต่มีรูป ก็เอารูปแรกมาแสดง
           if (trailersList.length === 0 && screenshotsList.length > 0) {
             setSelectedMedia({
               type: 'image',
@@ -100,27 +112,38 @@ function Detail() {
           console.log('Failed to fetch screenshots:', screenshotsResponse.status);
         }
         
+        // โหลดเสร็จแล้ว
         setStatus("idle");
       } catch (error) {
+        // เกิด error ระหว่างโหลด
         console.error('Error fetching game:', error);
         setStatus("error");
       }
     };
     
+    // เริ่มดึงข้อมูล
     fetchGameDetail();
   }, [id]);
 
+  /**
+   * ฟังก์ชันเปิด modal ให้แสดงแบบเต็มจอ
+   */
   const openModal = (type: 'video' | 'image', url: string, poster?: string) => {
     setIsModalOpen(true);
-    // Prevent body scroll when modal is open
+    // อย่าให้ scroll ได้ตอน modal เปิด
     document.body.style.overflow = 'hidden';
   };
-
+  
+  /**
+   * ฟังก์ชันปิด modal
+   */
   const closeModal = () => {
     setIsModalOpen(false);
+    // คืนค่าการ scroll กลับมา
     document.body.style.overflow = 'unset';
   };
 
+  // ขณะกำลังโหลด ให้แสดง loading
   if (status === "loading") {
     return (
       <div className="container mx-auto p-4">
@@ -139,6 +162,7 @@ function Detail() {
     );
   }
 
+  // ถ้าเกิด error หรือไม่เจอเกม ก็แสดงข้อความ error
   if (status === "error" || !game) {
     return (
       <div className="container mx-auto p-4">
@@ -162,23 +186,25 @@ function Detail() {
     );
   }
   
+  // แสดงหน้ารายละเอียดเกม
   return (
     <div className="min-h-screen bg-black">
       <div className="container mx-auto px-4 pb-8">
         <div className="max-w-6xl mx-auto">
-          {/* Full-width Background Image */}
+          {/* รูปพื้นหลังเต็มจอ มี gradient overlay ทับไว้ */}
           <div className="fixed top-0 left-0 w-full h-[100vh] z-0">
             <img 
               src={game.background_image || "https://placehold.co/1200x400?text=No+Image"} 
               alt={game.name}
               className="w-full h-full object-cover"
             />
+            {/* ใส่ gradient ทับเพื่อให้อ่านข้อความง่ายขึ้น */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black" />
           </div>
 
-          {/* Hero Content */}
+          {/* เนื้อหาหลัก */}
           <div className="relative z-10 pt-36 pb-6">
-            {/* Back Button */}
+            {/* ปุ่มกลับหน้าแรก */}
             <Link 
               to="/" 
               className="inline-flex items-center gap-2 mb-4 px-4 py-2 border-2 border-white bg-yellow-300 text-black font-bold hover:bg-black hover:text-yellow-300 rounded-lg text-sm transition-colors"
@@ -188,10 +214,14 @@ function Detail() {
               กลับหน้าแรก
             </Link>
             
+            {/* ชื่อเกม */}
             <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-6 drop-shadow-2xl">
               {game.name}
             </h1>
+            
+            {/* แสดงข้อมูลสำคัญ เช่น คะแนน Metacritic, Rating, วันที่ออก */}
             <div className="flex flex-wrap gap-3 items-center">
+              {/* คะแนน Metacritic ถ้ามี */}
               {game.metacritic && (
                 <div className="px-4 py-2 bg-green-400 text-white font-bold border-2 border-white rounded-lg flex items-center gap-2"
                      style={{ boxShadow: '4px 4px 0px 0px rgba(0,0,0,0.3)' }}>
@@ -199,11 +229,15 @@ function Detail() {
                   <span>Metacritic: {game.metacritic}</span>
                 </div>
               )}
+              
+              {/* คะแนนรีวิว */}
               <div className="px-4 py-2 bg-orange-400 text-white font-bold border-2 border-white rounded-lg flex items-center gap-2"
                    style={{ boxShadow: '4px 4px 0px 0px rgba(0,0,0,0.3)' }}>
                 <Star className="w-5 h-5 fill-white" />
                 <span>Rating: {game.rating.toFixed(1)} / 5</span>
               </div>
+              
+              {/* วันที่ออกขาย */}
               {game.released && (
                 <div className="px-4 py-2 bg-blue-400 text-white font-bold border-2 border-white rounded-lg flex items-center gap-2"
                      style={{ boxShadow: '4px 4px 0px 0px rgba(0,0,0,0.3)' }}>
@@ -214,20 +248,19 @@ function Detail() {
             </div>
           </div>
 
-          {/* Grid Content */}
+          {/* แบ่ง Layout เป็น 2 คอลัมน์ ซ้ายกับขวา */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10">
-            {/* Main Content */}
+            {/* คอลัมน์ซ้าย - เนื้อหาหลัก (ใช้ 2 ช่อง) */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Media Gallery - Trailers & Screenshots */}
+              {/* แกลเลอรี่วิดีโอและรูปภาพ */}
               {(trailers.length > 0 || screenshots.length > 0) && (
                 <div 
                   className="p-6 bg-gradient-to-br from-purple-500 to-pink-500 border-2 border-gray-700 rounded-lg"
                   style={{ boxShadow: '6px 6px 0px 0px rgba(43,43,43,0.3)' }}
                 >
-
-                  
-                  {/* Main Display Area */}
+                  {/* พื้นที่แสดงวิดีโอหรือรูปภาพหลัก */}
                   <div className="mb-4">
+                    {/* ถ้าเลือกวิดีโอ ก็แสดงวิดีโอ */}
                     {selectedMedia?.type === 'video' ? (
                       <video 
                         key={selectedMedia.url}
@@ -240,6 +273,7 @@ function Detail() {
                         เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
                       </video>
                     ) : selectedMedia?.type === 'image' ? (
+                      // ถ้าเลือกรูปภาพ ก็แสดงรูปภาพ
                       <img 
                         src={selectedMedia.url}
                         alt="Selected screenshot"
@@ -249,9 +283,9 @@ function Detail() {
                     ) : null}
                   </div>
 
-                  {/* Thumbnails Grid */}
+                  {/* Grid thumbnails ของวิดีโอและรูป */}
                   <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-                    {/* Trailer Thumbnails */}
+                    {/* Thumbnails วิดีโอทั้งหมด */}
                     {trailers.map((trailer) => (
                       <div
                         key={`video-${trailer.id}`}
@@ -271,6 +305,7 @@ function Detail() {
                           alt={trailer.name}
                           className="w-full h-full object-cover rounded"
                         />
+                        {/* ใส่ไอคอน play ตรงกลาง */}
                         <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded">
                           <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
                             <div className="w-0 h-0 border-t-4 border-t-transparent border-l-6 border-l-black border-b-4 border-b-transparent ml-1"></div>
@@ -279,7 +314,7 @@ function Detail() {
                       </div>
                     ))}
                     
-                    {/* Screenshot Thumbnails */}
+                    {/* Thumbnails รูปภาพ (เอาแค่ 12 รูปแรก) */}
                     {screenshots.slice(0, 12).map((screenshot) => (
                       <div
                         key={`image-${screenshot.id}`}
@@ -304,7 +339,7 @@ function Detail() {
                 </div>
               )}
 
-              {/* Description */}
+              {/* ส่วนคำอธิบายเกม */}
               {game.description_raw && (
                 <div 
                   className="p-6 bg-white border-2 border-gray-700 rounded-lg"
@@ -320,9 +355,9 @@ function Detail() {
               )}
             </div>
 
-            {/* Sidebar */}
+            {/* คอลัมน์ขวา - Sidebar */}
             <div className="space-y-6">
-              {/* Favorite Button */}
+              {/* ปุ่มเพิ่ม/ลบเกมโปรด */}
               <button
                 onClick={() => dispatch(toggleFavorite(game.id))}
                 className={`w-full btn border-2 border-gray-700 font-bold text-lg ${
@@ -336,7 +371,7 @@ function Detail() {
                 {isFavorited ? "ลบออกจากรายการโปรด" : "เพิ่มในรายการโปรด"}
               </button>
 
-              {/* Genres */}
+              {/* กล่องหมวดหมู่ */}
               {game.genres && game.genres.length > 0 && (
                 <div 
                   className="p-6 bg-green-400 border-2 border-gray-700 rounded-lg"
@@ -358,7 +393,7 @@ function Detail() {
                 </div>
               )}
 
-              {/* Developers */}
+              {/* กล่องผู้พัฒนา */}
               {game.developers && game.developers.length > 0 && (
                 <div 
                   className="p-6 bg-indigo-400 border-2 border-gray-700 rounded-lg"
@@ -381,7 +416,7 @@ function Detail() {
                 </div>
               )}
 
-              {/* Platforms */}
+              {/* กล่องแพลตฟอร์ม */}
               {game.platforms && game.platforms.length > 0 && (
                 <div 
                   className="p-6 bg-blue-400 border-2 border-gray-700 rounded-lg"
@@ -403,7 +438,7 @@ function Detail() {
                 </div>
               )}
 
-              {/* Stats */}
+              {/* กล่องสถิติ */}
               <div 
                 className="p-6 bg-yellow-300 border-2 border-gray-700 rounded-lg"
                 style={{ boxShadow: '6px 6px 0px 0px rgba(43,43,43,0.3)' }}
@@ -412,6 +447,7 @@ function Detail() {
                   สถิติ
                 </h3>
                 <div className="space-y-3">
+                  {/* จำนวนคนรีวิว */}
                   <div className="flex justify-between items-center">
                     <span className="text-gray-700 font-semibold flex items-center gap-2">
                       <Users className="w-5 h-5" />
@@ -419,6 +455,7 @@ function Detail() {
                     </span>
                     <span className="font-bold text-gray-900">{game.ratings_count.toLocaleString()}</span>
                   </div>
+                  {/* เวลาเล่นโดยเฉลี่ย */}
                   {game.playtime > 0 && (
                     <div className="flex justify-between items-center">
                       <span className="text-gray-700 font-semibold">เวลาเล่นเฉลี่ย:</span>
@@ -428,7 +465,7 @@ function Detail() {
                 </div>
               </div>
 
-              {/* Tags */}
+              {/* กล่องแท็ก (เอาแค่ 10 แท็กแรก) */}
               {game.tags && game.tags.length > 0 && (
                 <div 
                   className="p-6 bg-pink-400 border-2 border-gray-700 rounded-lg"
@@ -454,12 +491,13 @@ function Detail() {
         </div>
       </div>
 
-      {/* Fullscreen Modal */}
+      {/* Modal ดูรูปและวิดีโอแบบเต็มจอ */}
       {isModalOpen && selectedMedia && (
         <div 
           className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
           onClick={closeModal}
         >
+          {/* ปุ่ม X ปิด Modal */}
           <button
             onClick={closeModal}
             className="absolute top-4 right-4 p-2 bg-white rounded-full hover:bg-gray-200 transition-colors"
@@ -468,8 +506,10 @@ function Detail() {
             <X className="w-6 h-6 text-black" />
           </button>
           
+          {/* เนื้อหาใน Modal */}
           <div className="max-w-7xl w-full" onClick={(e) => e.stopPropagation()}>
             {selectedMedia.type === 'video' ? (
+              // แสดงวิดีโอเต็มจอ
               <video 
                 controls
                 autoPlay
@@ -480,6 +520,7 @@ function Detail() {
                 เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
               </video>
             ) : (
+              // แสดงรูปภาพเต็มจอ
               <img 
                 src={selectedMedia.url}
                 alt="Fullscreen view"
@@ -492,5 +533,3 @@ function Detail() {
     </div>
   );
 }
-
-export default Detail;

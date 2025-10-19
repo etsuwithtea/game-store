@@ -1,3 +1,4 @@
+// import ฟังก์ชันและประเภทที่จำเป็นจาก Redux Toolkit
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Game, GamesResponse } from '../types/game';

@@ -1,10 +1,15 @@
+// นำของที่จำเป็นมาใช้
 import { Gamepad2, Settings, Sparkles, FolderTree } from 'lucide-react';
 
+/**
+ * หน้า About
+ * แสดงข้อมูลเกี่ยวกับโปรเจกต์ เทคโนโลยีที่ใช้ ฟีเจอร์ และโครงสร้างไฟล์
+ */
 export default function About() {
     return (
         <div className="container mx-auto p-4">
             <div className="max-w-4xl mx-auto">
-                {/* Header Card */}
+                {/* การ์ดหัวข้อหลัก */}
                 <div 
                     className="mb-8 p-6 bg-yellow-300 border-2 border-gray-700 rounded-lg"
                     style={{ boxShadow: '6px 6px 0px 0px rgba(43,43,43,0.3)' }}
@@ -20,7 +25,7 @@ export default function About() {
                     </p>
                 </div>
 
-                {/* Tech Stack Card */}
+                {/* การ์ดแสดง Tech Stack */}
                 <div 
                     className="mb-8 p-6 bg-white border-2 border-gray-700 rounded-lg"
                     style={{ boxShadow: '6px 6px 0px 0px rgba(43,43,43,0.3)' }}
@@ -30,6 +35,7 @@ export default function About() {
                         เทคโนโลยีที่ใช้
                     </h2>
                     <div className="space-y-3">
+                        {/* แสดงรายการเทคโนโลยีที่ใช้ในโปรเจกต์ */}
                         <div className="flex items-start">
                             <span className="font-mono text-white bg-black bg-opacity-20 px-2 py-1 rounded mr-3">Build Tool:</span>
                             <span className="text-gray-700">Vite</span>
@@ -57,7 +63,7 @@ export default function About() {
                     </div>
                 </div>
 
-                {/* Features Card */}
+                {/* การ์ดแสดงฟีเจอร์หลัก */}
                 <div 
                     className="mb-8 p-6 bg-green-400 border-2 border-gray-700 rounded-lg"
                     style={{ boxShadow: '6px 6px 0px 0px rgba(43,43,43,0.3)' }}
@@ -86,7 +92,7 @@ export default function About() {
                     </ul>
                 </div>
 
-                {/* File Structure Card */}
+                {/* การ์ดแสดงโครงสร้างไฟล์ */}
                 <div 
                     className="mb-8 p-6 bg-blue-400 border-2 border-gray-700 rounded-lg"
                     style={{ boxShadow: '6px 6px 0px 0px rgba(43,43,43,0.3)' }}
@@ -114,7 +120,6 @@ export default function About() {
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     );

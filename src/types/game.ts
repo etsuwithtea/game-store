@@ -29,6 +29,7 @@ export type Game = {
   developers?: Developer[]; // เพิ่ม developers
 };
 
+// Type ย่อยต่างๆ ที่ใช้ใน Game type
 export type Rating = {
   id: number;
   title: string;
@@ -101,4 +102,26 @@ export type Developer = {
   slug: string;
   games_count: number;
   image_background: string;
+  description?: string; 
+};
+
+export type DeveloperDetail = Developer & {
+  description?: string;
+};
+
+export type MovieData = {
+  id: number;
+  name: string;
+  preview: string;
+  data: {
+    480?: string;
+    max?: string;
+  };
+};
+
+export type ScreenshotData = {
+  id: number;
+  image: string;
+  width: number;
+  height: number;
 };

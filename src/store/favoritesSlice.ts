@@ -1,3 +1,4 @@
+// import ฟังก์ชันและประเภทที่จำเป็นจาก Redux Toolkit
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 

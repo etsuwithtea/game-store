@@ -1,8 +1,15 @@
+// เอา type Game มาใช้
 import type { Game } from "../types/game";
 import GameCard from "./GameCard";
 import { Frown } from "lucide-react";
 
+/**
+ * Component แสดงกริดของเกม
+ * รับ array ของเกมมา แล้วแสดงเป็นกริด
+ * ถ้าไม่มีเกมจะแสดงข้อความว่าไม่พบ
+ */
 export default function GameGrid({ items }: { items: Game[] }) {
+  // ถ้าไม่มีเกมเลย แสดงข้อความว่าไม่พบ
   if (!items?.length) {
     return (
       <div className="flex flex-col items-center justify-center p-16">
@@ -18,6 +25,8 @@ export default function GameGrid({ items }: { items: Game[] }) {
     );
   }
 
+  // แสดงกริดของเกมทั้งหมด
+  // ใช้ responsive grid: 1 คอลัมน์ บน mobile, 2-4 คอลัมน์ บนหน้าจอใหญ่
   return (
     <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {items.map(game => <GameCard key={game.id} game={game} />)}

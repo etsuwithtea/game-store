@@ -1,8 +1,10 @@
+// import configureStore จาก Redux Toolkit
 import { configureStore } from '@reduxjs/toolkit';
 import gameReducer from './gameSlice';
 import favoritesReducer from './favoritesSlice';
 
-//ดึง gameReducer มาจาก gameSlice
+// ดึง gameReducer มาจาก gameSlice
+// reducerใช้ทำงานกับ state ย่อยต่างๆ ของแอปพลิเคชัน
 export const store = configureStore({
     reducer: {
         games: gameReducer,

@@ -1,2 +1,3 @@
+/* import css ที่ใช้งาน ่ เช่น tailwindcss, daisyui */
 @import "tailwindcss";
 @plugin "daisyui";

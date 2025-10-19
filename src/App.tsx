@@ -1,16 +1,18 @@
-// หน้านี้เป็นหน้าหลักของแอป ที่ไว้ routing
-
+// import หลักๆ ที่จำเป็นต้องใช้
 import { Outlet } from 'react-router-dom';
 import Navbar from "./components/Navbar";
+import Sidebar from './components/SideBar';
 
-function App() {
-
+// ฟังก์ชันหลักของเว็ปแอปพลิเคชัน ไว้แสดงหน้า
+export default function App() {
   return (
     <div>
-      <Navbar />
-      <Outlet />
+      {/* แสดง Navbar ที่ส่วนบนของหน้า */}
+      <Navbar/> 
+      {/* แสดง Sidebar ที่ด้านข้างของหน้า */}
+      <Sidebar/>
+      {/* แสดงเนื้อหาของหน้า ตามที่กำหนดใน routing ใน main.tsx  html > main > App*/}
+      <Outlet/>
     </div>
   );
 }
-
-export default App;
