@@ -10,7 +10,7 @@ import { Provider } from 'react-redux'
 
 // import components สำหรับ routing
 
-// สำหรับ Github Pages ควรใช้ createBrowserRouter แทน createHashRouter
+// สำหรับ Github Pages ควรใช้ createHashRouter แทน  createBrowserRouter
 //import { createHashRouter, RouterProvider } from 'react-router-dom'  
 import { createBrowserRouter, RouterProvider } from 'react-router-dom' 
 
