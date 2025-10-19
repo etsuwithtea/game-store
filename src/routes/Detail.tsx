@@ -4,14 +4,35 @@ import type { Game } from "../types/game";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleFavorite } from "../store/favoritesSlice";
 import type { RootState, AppDispatch } from "../store/store";
-import { ArrowLeft, Heart, Star, Gamepad2, Calendar, Users } from "lucide-react";
+import { ArrowLeft, Heart, Star, Gamepad2, Calendar, Users, X } from "lucide-react";
 
 const RAWG_API_KEY = import.meta.env.VITE_RAWG_API_KEY;
 const BASE_URL = 'https://api.rawg.io/api';
 
+interface MovieData {
+  id: number;
+  name: string;
+  preview: string;
+  data: {
+    480?: string;
+    max?: string;
+  };
+}
+
+interface ScreenshotData {
+  id: number;
+  image: string;
+  width: number;
+  height: number;
+}
+
 function Detail() {
   const { id } = useParams();
   const [game, setGame] = useState<Game | null>(null);
+  const [trailers, setTrailers] = useState<MovieData[]>([]);
+  const [screenshots, setScreenshots] = useState<ScreenshotData[]>([]);
+  const [selectedMedia, setSelectedMedia] = useState<{ type: 'video' | 'image', url: string, poster?: string } | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   
   const dispatch = useDispatch<AppDispatch>();
@@ -24,15 +45,61 @@ function Detail() {
       if (!id) return;
       setStatus("loading");
       try {
-        const url = `${BASE_URL}/games/${id}?key=${RAWG_API_KEY}`;
-        const response = await fetch(url);
+        // Fetch game details
+        const gameUrl = `${BASE_URL}/games/${id}?key=${RAWG_API_KEY}`;
+        const gameResponse = await fetch(gameUrl);
         
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        if (!gameResponse.ok) {
+          throw new Error(`HTTP error! status: ${gameResponse.status}`);
         }
         
-        const data: Game = await response.json();
-        setGame(data);
+        const gameData: Game = await gameResponse.json();
+        setGame(gameData);
+
+        // Fetch trailers/movies
+        const moviesUrl = `${BASE_URL}/games/${id}/movies?key=${RAWG_API_KEY}`;
+        const moviesResponse = await fetch(moviesUrl);
+        
+        let trailersList: MovieData[] = [];
+        if (moviesResponse.ok) {
+          const moviesData = await moviesResponse.json();
+          console.log('Movies data:', moviesData);
+          trailersList = moviesData.results || [];
+          setTrailers(trailersList);
+          
+          // ตั้งค่า video แรกเป็น selected media
+          if (trailersList.length > 0) {
+            setSelectedMedia({
+              type: 'video',
+              url: trailersList[0].data.max || trailersList[0].data['480'] || '',
+              poster: trailersList[0].preview
+            });
+          }
+        } else {
+          console.log('Failed to fetch movies:', moviesResponse.status);
+        }
+
+        // Fetch screenshots
+        const screenshotsUrl = `${BASE_URL}/games/${id}/screenshots?key=${RAWG_API_KEY}`;
+        const screenshotsResponse = await fetch(screenshotsUrl);
+        
+        if (screenshotsResponse.ok) {
+          const screenshotsData = await screenshotsResponse.json();
+          console.log('Screenshots data:', screenshotsData);
+          const screenshotsList = screenshotsData.results || [];
+          setScreenshots(screenshotsList);
+          
+          // ถ้าไม่มี trailer ให้ตั้งค่ารูปแรกเป็น selected media
+          if (trailersList.length === 0 && screenshotsList.length > 0) {
+            setSelectedMedia({
+              type: 'image',
+              url: screenshotsList[0].image
+            });
+          }
+        } else {
+          console.log('Failed to fetch screenshots:', screenshotsResponse.status);
+        }
+        
         setStatus("idle");
       } catch (error) {
         console.error('Error fetching game:', error);
@@ -42,6 +109,17 @@ function Detail() {
     
     fetchGameDetail();
   }, [id]);
+
+  const openModal = (type: 'video' | 'image', url: string, poster?: string) => {
+    setIsModalOpen(true);
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    document.body.style.overflow = 'unset';
+  };
 
   if (status === "loading") {
     return (
@@ -88,7 +166,7 @@ function Detail() {
     <div className="min-h-screen bg-black">
       <div className="container mx-auto px-4 pb-8">
         <div className="max-w-6xl mx-auto">
-          {/* Full-width Background Image - เพิ่มความสูง */}
+          {/* Full-width Background Image */}
           <div className="fixed top-0 left-0 w-full h-[100vh] z-0">
             <img 
               src={game.background_image || "https://placehold.co/1200x400?text=No+Image"} 
@@ -98,9 +176,9 @@ function Detail() {
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black" />
           </div>
 
-          {/* Hero Content - เพิ่ม padding-top */}
+          {/* Hero Content */}
           <div className="relative z-10 pt-36 pb-6">
-            {/* Back Button - วางเหนือชื่อเกม */}
+            {/* Back Button */}
             <Link 
               to="/" 
               className="inline-flex items-center gap-2 mb-4 px-4 py-2 border-2 border-white bg-yellow-300 text-black font-bold hover:bg-black hover:text-yellow-300 rounded-lg text-sm transition-colors"
@@ -136,10 +214,96 @@ function Detail() {
             </div>
           </div>
 
-          {/* Grid Content - ลบ margin-top */}
+          {/* Grid Content */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
+              {/* Media Gallery - Trailers & Screenshots */}
+              {(trailers.length > 0 || screenshots.length > 0) && (
+                <div 
+                  className="p-6 bg-gradient-to-br from-purple-500 to-pink-500 border-2 border-gray-700 rounded-lg"
+                  style={{ boxShadow: '6px 6px 0px 0px rgba(43,43,43,0.3)' }}
+                >
+
+                  
+                  {/* Main Display Area */}
+                  <div className="mb-4">
+                    {selectedMedia?.type === 'video' ? (
+                      <video 
+                        key={selectedMedia.url}
+                        controls
+                        className="w-full rounded-lg border-2 border-white cursor-pointer"
+                        poster={selectedMedia.poster}
+                        onClick={() => openModal('video', selectedMedia.url, selectedMedia.poster)}
+                      >
+                        <source src={selectedMedia.url} type="video/mp4" />
+                        เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
+                      </video>
+                    ) : selectedMedia?.type === 'image' ? (
+                      <img 
+                        src={selectedMedia.url}
+                        alt="Selected screenshot"
+                        className="w-full rounded-lg border-2 border-white cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => openModal('image', selectedMedia.url)}
+                      />
+                    ) : null}
+                  </div>
+
+                  {/* Thumbnails Grid */}
+                  <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                    {/* Trailer Thumbnails */}
+                    {trailers.map((trailer) => (
+                      <div
+                        key={`video-${trailer.id}`}
+                        className={`relative aspect-video rounded border-2 cursor-pointer hover:border-yellow-300 transition-all ${
+                          selectedMedia?.type === 'video' && selectedMedia?.url === (trailer.data.max || trailer.data['480'])
+                            ? 'border-yellow-300 ring-2 ring-yellow-300'
+                            : 'border-white'
+                        }`}
+                        onClick={() => setSelectedMedia({
+                          type: 'video',
+                          url: trailer.data.max || trailer.data['480'] || '',
+                          poster: trailer.preview
+                        })}
+                      >
+                        <img 
+                          src={trailer.preview}
+                          alt={trailer.name}
+                          className="w-full h-full object-cover rounded"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded">
+                          <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+                            <div className="w-0 h-0 border-t-4 border-t-transparent border-l-6 border-l-black border-b-4 border-b-transparent ml-1"></div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {/* Screenshot Thumbnails */}
+                    {screenshots.slice(0, 12).map((screenshot) => (
+                      <div
+                        key={`image-${screenshot.id}`}
+                        className={`relative aspect-video rounded border-2 cursor-pointer hover:border-yellow-300 transition-all ${
+                          selectedMedia?.type === 'image' && selectedMedia?.url === screenshot.image
+                            ? 'border-yellow-300 ring-2 ring-yellow-300'
+                            : 'border-white'
+                        }`}
+                        onClick={() => setSelectedMedia({
+                          type: 'image',
+                          url: screenshot.image
+                        })}
+                      >
+                        <img 
+                          src={screenshot.image}
+                          alt={`Screenshot ${screenshot.id}`}
+                          className="w-full h-full object-cover rounded"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Description */}
               {game.description_raw && (
                 <div 
@@ -152,28 +316,6 @@ function Detail() {
                   <p className="text-gray-700 leading-relaxed whitespace-pre-line">
                     {game.description_raw}
                   </p>
-                </div>
-              )}
-
-              {/* Screenshots */}
-              {game.short_screenshots && game.short_screenshots.length > 0 && (
-                <div 
-                  className="p-6 bg-purple-400 border-2 border-gray-700 rounded-lg"
-                  style={{ boxShadow: '6px 6px 0px 0px rgba(43,43,43,0.3)' }}
-                >
-                  <h2 className="text-2xl font-bold text-white mb-4 border-b-2 border-white pb-2">
-                    ภาพหน้าจอ
-                  </h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    {game.short_screenshots.slice(1, 5).map((screenshot) => (
-                      <img 
-                        key={screenshot.id}
-                        src={screenshot.image}
-                        alt={`Screenshot ${screenshot.id}`}
-                        className="w-full aspect-video object-cover rounded border-2 border-white"
-                      />
-                    ))}
-                  </div>
                 </div>
               )}
             </div>
@@ -311,6 +453,42 @@ function Detail() {
           </div>
         </div>
       </div>
+
+      {/* Fullscreen Modal */}
+      {isModalOpen && selectedMedia && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
+          onClick={closeModal}
+        >
+          <button
+            onClick={closeModal}
+            className="absolute top-4 right-4 p-2 bg-white rounded-full hover:bg-gray-200 transition-colors"
+            style={{ boxShadow: '3px 3px 0px 0px rgba(0,0,0,0.3)' }}
+          >
+            <X className="w-6 h-6 text-black" />
+          </button>
+          
+          <div className="max-w-7xl w-full" onClick={(e) => e.stopPropagation()}>
+            {selectedMedia.type === 'video' ? (
+              <video 
+                controls
+                autoPlay
+                className="w-full rounded-lg border-4 border-white"
+                poster={selectedMedia.poster}
+              >
+                <source src={selectedMedia.url} type="video/mp4" />
+                เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
+              </video>
+            ) : (
+              <img 
+                src={selectedMedia.url}
+                alt="Fullscreen view"
+                className="w-full h-auto max-h-[90vh] object-contain rounded-lg border-4 border-white"
+              />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
