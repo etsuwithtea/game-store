@@ -1,7 +1,7 @@
 // import หลักๆ ที่จำเป็นต้องใช้
 import { Outlet } from 'react-router-dom';
 import Navbar from "./components/Navbar";
-import Sidebar from './components/SideBar';
+import Sidebar from './components/Sidebar';
 
 // ฟังก์ชันหลักของเว็ปแอปพลิเคชัน ไว้แสดงหน้า
 export default function App() {

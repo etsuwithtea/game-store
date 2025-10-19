@@ -129,6 +129,8 @@ export default function Detail() {
    * ฟังก์ชันเปิด modal ให้แสดงแบบเต็มจอ
    */
   const openModal = (type: 'video' | 'image', url: string, poster?: string) => {
+    // ตั้ง media ที่จะดูแบบเต็มจอแล้วเปิด modal
+    setSelectedMedia({ type, url, poster });
     setIsModalOpen(true);
     // อย่าให้ scroll ได้ตอน modal เปิด
     document.body.style.overflow = 'hidden';
@@ -139,8 +141,9 @@ export default function Detail() {
    */
   const closeModal = () => {
     setIsModalOpen(false);
-    // คืนค่าการ scroll กลับมา
+    // คืนค่าการ scroll กลับมา และล้าง selected media
     document.body.style.overflow = 'unset';
+    setSelectedMedia(null);
   };
 
   // ขณะกำลังโหลด ให้แสดง loading

@@ -9,7 +9,11 @@ import { store } from './store/store'
 import { Provider } from 'react-redux'
 
 // import components สำหรับ routing
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+
+// สำหรับ Github Pages ควรใช้ createBrowserRouter แทน createHashRouter
+//import { createHashRouter, RouterProvider } from 'react-router-dom'  
+import { createBrowserRouter, RouterProvider } from 'react-router-dom' 
+
 import Home from './routes/Home'
 import About from './routes/About'
 import Detail from './routes/Detail'
@@ -19,6 +23,7 @@ import NotFound from './routes/NotFound'
 
 // กำหนด routes สำหรับเว็บแอปพลิเคชัน
 const router = createBrowserRouter([
+//const router = createHashRouter([
   {
     path: '/',
     element: <App />,
