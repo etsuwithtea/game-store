@@ -1,5 +1,8 @@
 // นำของที่จำเป็นมาใช้
-import { Gamepad2, Settings, Sparkles, FolderTree } from 'lucide-react';
+import { Gamepad2, Settings, Sparkles, Users, Zap } from 'lucide-react';
+import dev1 from '../assets/dev_1.jpg';
+import dev2 from '../assets/dev_2.jpg';
+import dev3 from '../assets/dev_3.jpeg';
 
 /**
  * หน้า About
@@ -30,22 +33,45 @@ export default function About() {
                     className="mb-8 p-6 bg-white border-2 border-gray-700 rounded-lg"
                     style={{ boxShadow: '6px 6px 0px 0px rgba(43,43,43,0.3)' }}
                 >
-                    <h2 className="text-3xl font-bold text-black mb-4 border-b-4 border-white pb-2 inline-flex items-center gap-2">
-                        <FolderTree size={32} className="text-black" />
+                    <h2 className="text-3xl font-bold text-black mb-6 border-b-4 border-black pb-2 inline-flex items-center gap-2">
+                        <Users size={32} className="text-black" />
                         ผู้พัฒนา โปรเจกต์
                     </h2>
-                    <div className="space-y-2 text-white">
-                        <div className="flex items-start">
-                            <span className="font-mono bg-black bg-opacity-20 px-2 py-1 rounded mr-3"> Navapan Suthon </span>
-                            <span className="text-black"> รับผิดชอบ  : Home Page, About Page, Navbar, Sidebar, Notfound</span>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Developer 1 */}
+                        <div className="flex flex-col items-center text-center">
+                            <img 
+                                src={dev1} 
+                                alt="Navapan Suthon" 
+                                className="w-32 h-32 rounded-lg object-cover mb-3 border-2 border-gray-700"
+                                style={{ boxShadow: '4px 4px 0px 0px rgba(43,43,43,0.3)' }}
+                            />
+                            <p className="font-bold text-lg text-black mb-1">Navapan Suthon</p>
+                            <p className="text-sm text-gray-700 mb-2">Home Page, About Page,<br />Navbar, Sidebar, Notfound</p>
                         </div>
-                        <div className="flex items-start">
-                            <span className="font-mono bg-black bg-opacity-20 px-2 py-1 rounded mr-3"> Supacheep Poonsawat </span>
-                            <span className="text-black"> รับผิดชอบ  : Detail Page, Developer Page, Backend (API Connect)</span>
+
+                        {/* Developer 2 */}
+                        <div className="flex flex-col items-center text-center">
+                            <img 
+                                src={dev2} 
+                                alt="Supacheep Poonsawat" 
+                                className="w-32 h-32 rounded-lg object-cover mb-3 border-2 border-gray-700"
+                                style={{ boxShadow: '4px 4px 0px 0px rgba(43,43,43,0.3)' }}
+                            />
+                            <p className="font-bold text-lg text-black mb-1">Supacheep Poonsawat</p>
+                            <p className="text-sm text-gray-700 mb-2">Detail Page, Developer Page,<br />Backend (API Connect)</p>
                         </div>
-                        <div className="flex items-start">
-                            <span className="font-mono  bg-black bg-opacity-20 px-2 py-1 rounded mr-3"> Rapeepong Chaimongkol</span>
-                            <span className="text-black"> รับผิดชอบ  : Favorite Page, Tester</span>
+
+                        {/* Developer 3 */}
+                        <div className="flex flex-col items-center text-center">
+                            <img 
+                                src={dev3} 
+                                alt="Rapeepong Chaimongkol" 
+                                className="w-32 h-32 rounded-lg object-cover mb-3 border-2 border-gray-700"
+                                style={{ boxShadow: '4px 4px 0px 0px rgba(43,43,43,0.3)' }}
+                            />
+                            <p className="font-bold text-lg text-black mb-1">Rapeepong Chaimongkol</p>
+                            <p className="text-sm text-gray-700 mb-2">Favorite Page, Tester</p>
                         </div>
                     </div>
                 </div>
@@ -99,20 +125,28 @@ export default function About() {
                     </h2>
                     <ul className="space-y-2 text-black">
                         <li className="flex items-start">
-                            <span className="mr-2">+</span>
-                            <span>ค้นหาเกมโดยชื่อ</span>
+                            <span className="mr-2">•</span>
+                            <span>ค้นหาเกมตามชื่อ ผ่าน Search Bar</span>
                         </li>
                         <li className="flex items-start">
-                            <span className="mr-2">+</span>
-                            <span>กรองตามหมวด (Genre) และเรียงลำดับ (Ordering)</span>
+                            <span className="mr-2">•</span>
+                            <span>กรองเกมตามหมวด (Genre) และแพลตฟอร์ม (Platform)</span>
                         </li>
                         <li className="flex items-start">
-                            <span className="mr-2">+</span>
+                            <span className="mr-2">•</span>
+                            <span>เรียงลำดับเกมตามเกณฑ์ต่างๆ (Ordering)</span>
+                        </li>
+                        <li className="flex items-start">
+                            <span className="mr-2">•</span>
                             <span>บันทึกเกมโปรด (Favorites) ลงใน localStorage</span>
                         </li>
                         <li className="flex items-start">
-                            <span className="mr-2">+</span>
-                            <span>การแบ่งหน้า (Pagination) และการจัดการสถานะโหลด/ข้อผิดพลาด</span>
+                            <span className="mr-2">•</span>
+                            <span>ดูรายละเอียดเกมแบบละเอียด (Detail Page)</span>
+                        </li>
+                        <li className="flex items-start">
+                            <span className="mr-2">•</span>
+                            <span>ดูนักพัฒนาเกม (Developer Page)</span>
                         </li>
                     </ul>
                 </div>
@@ -123,7 +157,7 @@ export default function About() {
                     style={{ boxShadow: '6px 6px 0px 0px rgba(43,43,43,0.3)' }}
                 >
                     <h2 className="text-3xl font-bold text-white mb-4 border-b-4 border-white pb-2 inline-flex items-center gap-2">
-                        <FolderTree size={32} className="text-white" />
+                        <Zap size={32} className="text-white" />
                         โครงสร้างไฟล์สำคัญ
                     </h2>
                     <div className="space-y-2 text-white">
