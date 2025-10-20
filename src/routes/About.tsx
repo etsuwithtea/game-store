@@ -25,6 +25,31 @@ export default function About() {
                     </p>
                 </div>
 
+                {/* การ์ดแสดงผู้พัฒนา */}
+                <div 
+                    className="mb-8 p-6 bg-white border-2 border-gray-700 rounded-lg"
+                    style={{ boxShadow: '6px 6px 0px 0px rgba(43,43,43,0.3)' }}
+                >
+                    <h2 className="text-3xl font-bold text-black mb-4 border-b-4 border-white pb-2 inline-flex items-center gap-2">
+                        <FolderTree size={32} className="text-black" />
+                        ผู้พัฒนา โปรเจกต์
+                    </h2>
+                    <div className="space-y-2 text-white">
+                        <div className="flex items-start">
+                            <span className="font-mono bg-black bg-opacity-20 px-2 py-1 rounded mr-3"> Navapan Suthon </span>
+                            <span className="text-black"> รับผิดชอบ  : Home Page, About Page, Navbar, Sidebar, Notfound</span>
+                        </div>
+                        <div className="flex items-start">
+                            <span className="font-mono bg-black bg-opacity-20 px-2 py-1 rounded mr-3"> Supacheep Poonsawat </span>
+                            <span className="text-black"> รับผิดชอบ  : Detail Page, Developer Page, Backend (API Connect)</span>
+                        </div>
+                        <div className="flex items-start">
+                            <span className="font-mono  bg-black bg-opacity-20 px-2 py-1 rounded mr-3"> Rapeepong Chaimongkol</span>
+                            <span className="text-black"> รับผิดชอบ  : Favorite Page, Tester</span>
+                        </div>
+                    </div>
+                </div>
+
                 {/* การ์ดแสดง Tech Stack */}
                 <div 
                     className="mb-8 p-6 bg-white border-2 border-gray-700 rounded-lg"
