@@ -101,7 +101,7 @@ export default function GameCard({ game }: Props) {
           {/* แสดง Platforms (สูงสุด 4 แพลตฟอร์ม) */}
           {game.platforms && game.platforms.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-3">
-              {game.platforms.slice(0, 2).map((p) => (
+              {game.platforms.slice(0, 4).map((p) => (
                 <div 
                   key={p.platform.id} 
                   className="px-2 py-0.5 text-xs bg-blue-400 text-white font-bold border-2 border-gray-700 rounded flex items-center gap-1"

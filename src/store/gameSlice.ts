@@ -18,6 +18,7 @@ type GamesState = {
   query: string; // คำค้นหา
   ordering: string; // การจัดเรียงข้อมูล
   genre?: string; // กรองตามหมวด (genre slug)
+  platform?: string; // กรองตามแพลตฟอร์ม (platform id)
 };
 
 // กำหนดค่าเริ่มต้นสำหรับ State ของ games
@@ -30,15 +31,16 @@ const initialState: GamesState = {
   query: '',
   ordering: '-added', // เรียงตามวันที่เพิ่มล่าสุด
   genre: '',
+  platform: '',
 };
 
 // สร้าง Async Thunk สำหรับการดึงข้อมูลเกม
 export const fetchGames = createAsyncThunk<
   GamesResponse,
-  { offset?: number; limit?: number; ordering?: string; search?: string; genre?: string }
+  { offset?: number; limit?: number; ordering?: string; search?: string; genre?: string; platform?: string }
 >(
   'games/fetchGames',
-  async ({ offset = 0, limit = 20, ordering = '-added', search = '', genre = '' }) => {
+  async ({ offset = 0, limit = 20, ordering = '-added', search = '', genre = '', platform = '' }) => {
     // คำนวณหมายเลขหน้าจาก offset
     const page = Math.floor(offset / limit) + 1;
     
@@ -59,6 +61,11 @@ export const fetchGames = createAsyncThunk<
     if (genre) {
       // RAWG API ใช้พารามิเตอร์ชื่อ `genres` ที่รับค่าเป็น slug หรือ id
       params.append('genres', genre);
+    }
+
+    // เพิ่มการกรองแพลตฟอร์ม
+    if (platform) {
+      params.append('platforms', platform);
     }
 
     const url = `${BASE_URL}/games?${params.toString()}`;
@@ -96,6 +103,10 @@ const gamesSlice = createSlice({
       state.genre = action.payload;
       state.offset = 0; // รีเซ็ต offset เมื่อเปลี่ยนการกรอง
     },
+    setPlatform(state, action: PayloadAction<string>) {
+      state.platform = action.payload;
+      state.offset = 0; // รีเซ็ต offset เมื่อเปลี่ยนแพลตฟอร์ม
+    },
     reset(state) {
       Object.assign(state, initialState);
     },
@@ -123,7 +134,7 @@ const gamesSlice = createSlice({
 });
 
 // Export actions จาก reducers
-export const { setOffset, setQuery, setOrdering, setGenre, reset } = gamesSlice.actions;
+export const { setOffset, setQuery, setOrdering, setGenre, setPlatform, reset } = gamesSlice.actions;
 
 // Export reducer
 export default gamesSlice.reducer;

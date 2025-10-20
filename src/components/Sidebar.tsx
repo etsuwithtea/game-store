@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { setOrdering, setOffset, setGenre, setQuery } from '../store/gameSlice';
+import { setOrdering, setOffset, setGenre, setQuery, setPlatform } from '../store/gameSlice';
 import type { AppDispatch, RootState } from '../store/store';
 import { 
   Star, 
@@ -54,6 +54,14 @@ export default function Sidebar() {
     dispatch(setGenre(genre));
     dispatch(setOffset(0));
     // บังคับให้โหลดใหม่โดยการนำทางไปหน้า home
+    navigate('/');
+    closeSidebar();
+  };
+
+  // ฟังก์ชันเปลี่ยน Platform
+  const handlePlatformChange = (platformId: string) => {
+    dispatch(setPlatform(platformId));
+    dispatch(setOffset(0));
     navigate('/');
     closeSidebar();
   };
@@ -282,7 +290,7 @@ export default function Sidebar() {
         <h3 className="text-gray-900 font-extrabold text-lg mb-3 px-2">Platforms</h3>
         <div className="space-y-1">
           <button
-            onClick={handleResetAll}
+            onClick={() => handlePlatformChange('4')}
             className="flex items-center gap-3 px-4 py-2 bg-white hover:bg-gray-200 text-gray-900 font-medium rounded-lg transition-colors border-2 border-gray-700 w-full text-left"
             style={{ boxShadow: '3px 3px 0px 0px rgba(43,43,43,0.3)' }}
           >
@@ -290,7 +298,7 @@ export default function Sidebar() {
             <span>PC</span>
           </button>
           <button
-            onClick={handleResetAll}
+            onClick={() => handlePlatformChange('18')}
             className="flex items-center gap-3 px-4 py-2 bg-white hover:bg-gray-200 text-gray-900 font-medium rounded-lg transition-colors border-2 border-gray-700 w-full text-left"
             style={{ boxShadow: '3px 3px 0px 0px rgba(43,43,43,0.3)' }}
           >
@@ -298,7 +306,7 @@ export default function Sidebar() {
             <span>PlayStation 4</span>
           </button>
           <button
-            onClick={handleResetAll}
+            onClick={() => handlePlatformChange('1')}
             className="flex items-center gap-3 px-4 py-2 bg-white hover:bg-gray-200 text-gray-900 font-medium rounded-lg transition-colors border-2 border-gray-700 w-full text-left"
             style={{ boxShadow: '3px 3px 0px 0px rgba(43,43,43,0.3)' }}
           >
@@ -320,21 +328,21 @@ export default function Sidebar() {
           {showAllPlatforms && (
             <div className="space-y-1 pl-2">
               <button
-                onClick={handleResetAll}
+                onClick={() => handlePlatformChange('187')}
                 className="flex items-center gap-3 px-4 py-2 bg-white hover:bg-gray-200 text-gray-900 font-medium rounded-lg transition-colors border-2 border-gray-700 w-full text-left"
                 style={{ boxShadow: '3px 3px 0px 0px rgba(43,43,43,0.3)' }}
               >
                 <span>PlayStation 5</span>
               </button>
               <button
-                onClick={handleResetAll}
+                onClick={() => handlePlatformChange('186')}
                 className="flex items-center gap-3 px-4 py-2 bg-white hover:bg-gray-200 text-gray-900 font-medium rounded-lg transition-colors border-2 border-gray-700 w-full text-left"
                 style={{ boxShadow: '3px 3px 0px 0px rgba(43,43,43,0.3)' }}
               >
                 <span>Xbox Series X</span>
               </button>
               <button
-                onClick={handleResetAll}
+                onClick={() => handlePlatformChange('7')}
                 className="flex items-center gap-3 px-4 py-2 bg-white hover:bg-gray-200 text-gray-900 font-medium rounded-lg transition-colors border-2 border-gray-700 w-full text-left"
                 style={{ boxShadow: '3px 3px 0px 0px rgba(43,43,43,0.3)' }}
               >

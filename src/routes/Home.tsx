@@ -12,14 +12,14 @@ export default function Home() {
   const dispatch = useDispatch<AppDispatch>();
   
   // ดึงข้อมูลจาก Redux มาใช้ (สถานะต่างๆ ของเกม)
-  const { items, status, error, count, limit, offset, query, ordering, genre } = useSelector(
+  const { items, status, error, count, limit, offset, query, ordering, genre, platform } = useSelector(
     (s: RootState) => s.games
   );
 
-  // ทุกครั้งที่มีการเปลี่ยน offset, query, ordering, genre จะไปดึงข้อมูลเกมใหม่
+  // ทุกครั้งที่มีการเปลี่ยน offset, query, ordering, genre, platform จะไปดึงข้อมูลเกมใหม่
   useEffect(() => {
-    dispatch(fetchGames({ offset, limit, search: query, ordering, genre }));
-  }, [dispatch, offset, limit, query, ordering, genre]);
+    dispatch(fetchGames({ offset, limit, search: query, ordering, genre, platform }));
+  }, [dispatch, offset, limit, query, ordering, genre, platform]);
 
   return (
     // เพิ่ม margin-left เพื่อหลบ sidebar (16px สำหรับ sidebar หุบ, 256px สำหรับ sidebar ขยาย)
