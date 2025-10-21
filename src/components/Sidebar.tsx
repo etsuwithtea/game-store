@@ -20,6 +20,62 @@ import {
   ChevronLeft
 } from 'lucide-react';
 
+// SearchBox Component - ตัวแยกเพื่อให้ input state ไม่หลุด
+function SearchBox() {
+  const dispatch = useDispatch<AppDispatch>();
+  const [inputValue, setInputValue] = useState<string>('');
+
+  const handleSearch = () => {
+    dispatch(setQuery(inputValue));
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  const handleClear = () => {
+    setInputValue('');
+    dispatch(setQuery(''));
+  };
+
+  return (
+    <div>
+      <h3 className="text-gray-900 font-extrabold text-lg mb-3 px-2">Search</h3>
+      <div className="space-y-2">
+        <div className="relative">
+          <input
+            type="text"
+            className="input w-full px-3 border-2 border-gray-700 bg-white text-black font-medium focus:outline-none focus:border-gray-900"
+            placeholder="ค้นหาเกม...."
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={handleKeyPress}
+            style={{ boxShadow: '4px 4px 0px 0px rgba(43,43,43,0.3)' }}
+          />
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={handleSearch}
+            className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg transition-colors border-2 border-gray-700"
+            style={{ boxShadow: '3px 3px 0px 0px rgba(43,43,43,0.3)' }}
+          >
+            Search
+          </button>
+          <button
+            onClick={handleClear}
+            className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg transition-colors border-2 border-gray-700"
+            style={{ boxShadow: '3px 3px 0px 0px rgba(43,43,43,0.3)' }}
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /**
  * Component Sidebar สำหรับนำทางหมวดหมู่ต่างๆ
  * รองรับ responsive - แสดงแบบ fixed บน desktop, drawer บน mobile
@@ -34,7 +90,7 @@ export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(true);
 
   // ดึงข้อมูลจาก Redux
-  const { query, ordering } = useSelector((s: RootState) => s.games);
+  const { ordering } = useSelector((s: RootState) => s.games);
 
   // ฟังก์ชันสำหรับปิด sidebar บน mobile
   const closeSidebar = () => setIsOpen(false);
@@ -80,19 +136,7 @@ export default function Sidebar() {
   const SidebarContent = () => (
     <div className="h-full overflow-y-auto p-4 space-y-6">
       {/* ช่องค้นหาเกม */}
-      <div>
-        <h3 className="text-gray-900 font-extrabold text-lg mb-3 px-2">Search</h3>
-        <div className="relative">
-          <input
-            type="text"
-            className="input w-full px-3 border-2 border-gray-700 bg-white text-black font-medium focus:outline-none focus:border-gray-900"
-            placeholder="ค้นหาเกม...."
-            value={query}
-            onChange={(e) => dispatch(setQuery(e.target.value))}
-            style={{ boxShadow: '4px 4px 0px 0px rgba(43,43,43,0.3)' }}
-          />
-        </div>
-      </div>
+      <SearchBox />
 
       {/* เรียงลำดับเกม */}
       <div>
