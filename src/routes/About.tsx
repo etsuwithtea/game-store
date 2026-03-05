@@ -7,6 +7,7 @@ import dev3 from '../assets/dev_3.jpeg';
 /**
  * หน้า About
  * แสดงข้อมูลเกี่ยวกับโปรเจกต์ เทคโนโลยีที่ใช้ ฟีเจอร์ และโครงสร้างไฟล์
+ * Test Best
  */
 export default function About() {
     return (
